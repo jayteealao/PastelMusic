@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.github.jayteealao.pastelmusic.app">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- If your app doesn't need to access media files that other apps created,
+     set the "maxSdkVersion" attribute to "28" instead. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
 
     <application
+        android:name=".PastelApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,14 +24,57 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".MainActivity"
-            android:exported="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+            <intent-filter>
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+            </intent-filter>
         </activity>
+
+        <!--
+        Declare the common MediaLibraryService for use in the mobile app, including
+        with the Android Auto app.
+        -->
+<!--        <service-->
+<!--            android:name=".player.PastelMediaLibraryService"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true"-->
+<!--            android:foregroundServiceType="mediaPlayback"-->
+<!--            tools:ignore="ExportedService">-->
+
+<!--            <intent-filter>-->
+<!--                <action android:name="androidx.media3.session.MediaLibraryService"/>-->
+<!--                <action android:name="androidx.media3.session.MediaSessionService"/>-->
+<!--&lt;!&ndash;                <action android:name="android.media.browse.MediaBrowserService" />&ndash;&gt;-->
+<!--            </intent-filter>-->
+<!--        </service>-->
+
+        <service
+            android:name=".mediaservice.MusicService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="ExportedService">
+
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaLibraryService"/>
+<!--                <action android:name="androidx.media3.session.MediaSessionService"/>-->
+<!--                <action android:name="android.media.browse.MediaBrowserService" />-->
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

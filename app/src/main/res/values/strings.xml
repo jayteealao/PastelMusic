@@ -1,9 +1,42 @@
 <resources>
-    <string name="app_name">Kotlin Android Template</string>
+    <string name="app_name">PastelMusic</string>
     <string name="title">This is just a template</string>
     <string name="description">You can compute a factorial using the library-kotlin module. The result will be also shown in a notification using the library-android module.</string>
     <string name="factorial_hint">Insert a number to compute his factorial</string>
     <string name="compute">Compute</string>
     <string name="notification_title">The Result is:</string>
     <string name="compose_version">In Compose</string>
+    <string name="title_activity_main">PastelMusic</string>
+
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">Now Playing</string>
+    <string name="notification_channel_description">Shows what music is currently playing in UAMP</string>
+
+    <!-- Notification actions -->
+    <string name="notification_skip_to_previous">Skip to previous track</string>
+    <string name="notification_skip_to_next">Skip to next track</string>
+    <string name="notification_play">Play</string>
+    <string name="notification_pause">Pause</string>
+
+    <!-- Error messages -->
+    <string name="error_media_not_found">Could not locate requested media.</string>
+    <string name="generic_error">The application has encountered an unexpected error.</string>
+    <!-- Allowed caller template -->
+    <string name="allowed_caller_log">
+        Caller has a valid certificate, but its package doesn\'t match any expected package for the
+        given certificate. To allow this caller, add the following to the allowed callers list:\n
+        <![CDATA[
+        <signature name=\"%1$s\" package=\"%2$s\">\n\t<key>%3$s</key>\n</signature>\n
+        ]]>
+    </string>
+
+    <!-- Cast menu item -->
+    <string name="media_route_menu_title">Cast</string>
+
+    <!-- Browse Tree -->
+    <string name="recommended_title">Recommended</string>
+    <string name="albums_title">Albums</string>
+    <string name="repeat">Repeat</string>
+    <string name="repeat_one">Repeat Once</string>
+    <string name="shuffle">Shuffle</string>
 </resources>
