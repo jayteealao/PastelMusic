@@ -6,7 +6,8 @@ plugins {
 //    id(libs.plugins.hilt.get().pluginId)
     id("com.google.dagger.hilt.android")
     kotlin("kapt")
-
+    alias(libs.plugins.paparazzi)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -59,6 +60,14 @@ android {
     }
     namespace = "com.github.jayteealao.pastelmusic.app"
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+        animationsDisabled = true
+    }
+
     // Use this block to configure different flavors
 //    flavorDimensions("version")
 //    productFlavors {
@@ -110,13 +119,37 @@ dependencies {
 //    https://github.com/google/dagger/issues/3383#issuecomment-1121189678
 //    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
 
-    testImplementation(libs.junit)
+    // Unit Tests
+    testImplementation(libs.bundles.testing.unit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.bundles.testing.roborazzi)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.compose.ui.test.junit4)
 
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit.ktx)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.espresso.core)
+    // Android Instrumented Tests
+    androidTestImplementation(libs.bundles.testing.android)
     androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest("com.google.dagger:hilt-compiler:2.45")
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+}
+
+// Configure Roborazzi output directory
+roborazzi {
+    outputDir.set(file("src/test/snapshots/roborazzi"))
+}
+
+// Test task configurations for deterministic results
+tasks.withType<Test>().configureEach {
+    // Set timezone and locale for deterministic tests
+    systemProperty("user.timezone", "UTC")
+    systemProperty("user.language", "en")
+    systemProperty("user.country", "US")
+
+    // Roborazzi configuration
+    systemProperty("roborazzi.test.verify", System.getProperty("roborazzi.test.verify", "true"))
+    systemProperty("roborazzi.test.record", System.getProperty("roborazzi.test.record", "false"))
 }
