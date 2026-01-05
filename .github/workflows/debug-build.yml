@@ -1,0 +1,102 @@
+name: Manual Debug Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: 'Version name (e.g., 1.0.0, 1.0.0-debug)'
+        required: true
+        default: '1.0.0'
+      create_release:
+        description: 'Create a GitHub release?'
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Fix gradlew perms & line endings
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-33 build-tools;33.0.2
+
+      - name: Build Debug APK
+        run: |
+          ./gradlew --no-daemon clean assembleDebug
+
+      - name: Find outputs
+        id: find_outputs
+        run: |
+          VERSION="${{ github.event.inputs.version_name }}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+          # Find debug APK (automatically signed with debug keystore)
+          APK=$(find . -type f -path "*/app/build/outputs/apk/debug/*.apk" ! -name "*-unaligned.apk" | head -n1)
+
+          echo "=== DEBUG: Found files ==="
+          echo "APK: ${APK}"
+          echo "=========================="
+
+          if [ -z "$APK" ]; then
+            echo "WARNING: No APK found!"
+            echo "Listing all APK files:"
+            find . -name "*.apk" -type f
+          fi
+
+          echo "apk=${APK}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        if: ${{ steps.find_outputs.outputs.apk != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: PastelMusic-debug-v${{ github.event.inputs.version_name }}.apk
+          retention-days: 30
+          path: ${{ steps.find_outputs.outputs.apk }}
+
+      - name: Upload APK artifact (fallback - find any APK)
+        if: ${{ steps.find_outputs.outputs.apk == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: PastelMusic-debug-v${{ github.event.inputs.version_name }}-all-apks
+          retention-days: 30
+          path: app/build/outputs/apk/debug/*.apk
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.create_release == 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version_name }}-debug
+          name: v${{ github.event.inputs.version_name }} (Debug)
+          body: |
+            ## Debug Release v${{ github.event.inputs.version_name }}
+
+            Manual debug build triggered by @${{ github.actor }}
+
+            ⚠️ **This is a debug build** - not suitable for production use.
+          draft: true
+          files: |
+            ${{ steps.find_outputs.outputs.apk }}

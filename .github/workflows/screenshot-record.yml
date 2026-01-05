@@ -1,0 +1,84 @@
+name: Record Screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      record_paparazzi:
+        description: 'Record Paparazzi screenshots'
+        required: true
+        type: boolean
+        default: true
+      record_roborazzi:
+        description: 'Record Roborazzi screenshots'
+        required: true
+        type: boolean
+        default: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record-screenshots:
+    name: Record Screenshots
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Fix gradlew permissions
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+
+      - name: Record Paparazzi Screenshots
+        if: ${{ github.event.inputs.record_paparazzi == 'true' }}
+        run: ./gradlew recordPaparazziDebug --no-daemon
+
+      - name: Record Roborazzi Screenshots
+        if: ${{ github.event.inputs.record_roborazzi == 'true' }}
+        run: ./gradlew recordRoborazziDebug --no-daemon
+
+      - name: Upload Paparazzi Snapshots
+        if: ${{ github.event.inputs.record_paparazzi == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: paparazzi-snapshots
+          retention-days: 30
+          path: |
+            **/build/paparazzi/
+            **/src/test/snapshots/
+
+      - name: Upload Roborazzi Snapshots
+        if: ${{ github.event.inputs.record_roborazzi == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: roborazzi-snapshots
+          retention-days: 30
+          path: |
+            **/src/test/snapshots/roborazzi/
+
+      - name: Summary
+        run: |
+          echo "## Screenshot Recording Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Screenshots have been recorded and uploaded as artifacts." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### How to update the repository:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the snapshot artifacts from this workflow run" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract and copy the snapshots to your local repository" >> $GITHUB_STEP_SUMMARY
+          echo "3. Commit and push the changes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Triggered by @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

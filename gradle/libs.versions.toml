@@ -1,22 +1,23 @@
 [versions]
 accompanist = "0.28.0"
-agp = "7.2.2"
+agp = "8.1.4"
 androidx_activity_compose = "1.7.1"
-androidx_test = "1.4.0"
-androidx_test_ext = "1.1.3"
+androidx_test = "1.5.0"
+androidx_test_ext = "1.1.5"
 appcompat = "1.6.1"
 compile_sdk_version = "33"
 compose = "1.4.3"
-compose_compilerextension = "1.4.7"
+compose_compilerextension = "1.5.15"
 constraint_layout = "2.1.4"
 core_ktx = "1.8.0"
-detekt = "1.21.0"
+detekt = "1.23.7"
 dokka = "1.7.10"
-espresso_core = "3.4.0"
+espresso_core = "3.5.1"
 glide = "4.13.2"
-hilt = "2.44"
+hilt = "2.48"
 junit = "4.13.2"
-kotlin = "1.8.21"
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.28"
 ktlint = "0.45.2"
 ktlint_gradle = "10.2.1"
 lifecycle_version = "2.6.1"
@@ -27,6 +28,15 @@ nav_version = "2.5.3"
 target_sdk_version = "33"
 benmanesversion = "0.42.0"
 coil = "2.2.2"
+
+# Testing versions
+coroutines_test = "1.7.3"
+mockk = "1.13.8"
+truth = "1.1.5"
+turbine = "1.0.0"
+robolectric = "4.13"
+paparazzi = "1.3.1"
+roborazzi = "1.28.0"
 
 [libraries]
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -41,6 +51,7 @@ lifecycle_compose = {module = "androidx.lifecycle:lifecycle-viewmodel-compose", 
 lifecycle_runtime_compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle_version"}
 lifecycle_compiler = {module = "androidx.lifecycle:lifecycle-compiler", version.ref = "lifecycle_version"}
 
+androidx_test_core = { module = "androidx.test:core", version.ref = "androidx.test" }
 androidx_test_rules = { module = "androidx.test:rules", version.ref = "androidx.test" }
 androidx_test_runner = { module = "androidx.test:runner", version.ref = "androidx.test" }
 androidx_test_ext_junit = { module = "androidx.test.ext:junit", version.ref = "androidx.test.ext" }
@@ -86,14 +97,33 @@ glide = { module = 'com.github.bumptech.glide:glide', version.ref = "glide" }
 glide_compiler = { module = 'com.github.bumptech.glide:compiler', version.ref = "glide" }
 hilt_android = { module = "com.google.dagger:hilt-android", version.ref= "hilt"}
 
+# Testing libraries
+coroutines_test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines_test" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk_android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi_compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+roborazzi_junit = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
+hilt_android_testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+
 [bundles]
 media3 = ["media3_exoplayer", "media3_common", "media3_session", "media3_extractor", "media3_datasource", "media3_common"]
 compose = ["compose_material", "compose_foundation", "compose_ui", "compose_ui_tooling", "compose_ui_tooling_preview", "compose_animation", "compose_runtime", "lifecycle_runtime_compose", "compose_material_icons_extended", "compose_material_icons_core", "compose_materal3", "compose_constraint_layout"]
 coil = ["coil", "coil_compose"]
 accompanist = ["accompanist_systemuicontroller"]
+testing_unit = ["junit", "coroutines_test", "mockk", "truth", "turbine"]
+testing_android = ["androidx_test_core", "androidx_test_runner", "androidx_test_rules", "androidx_test_ext_junit", "androidx_test_ext_junit_ktx", "espresso_core", "compose_ui_test_junit4", "mockk_android", "truth"]
+testing_roborazzi = ["roborazzi", "roborazzi_compose", "roborazzi_junit"]
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint.gradle" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "benmanesversion" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }

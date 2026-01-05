@@ -5,8 +5,10 @@ plugins {
     kotlin("android")
 //    id(libs.plugins.hilt.get().pluginId)
     id("com.google.dagger.hilt.android")
-    kotlin("kapt")
-
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.paparazzi)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -35,6 +37,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    kotlin {
+        jvmToolchain(17)
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -59,6 +66,14 @@ android {
     }
     namespace = "com.github.jayteealao.pastelmusic.app"
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+        animationsDisabled = true
+    }
+
     // Use this block to configure different flavors
 //    flavorDimensions("version")
 //    productFlavors {
@@ -74,9 +89,9 @@ android {
 }
 
 // Allow references to generated code
-//kapt {
-//    correctErrorTypes = true
-//}
+ksp {
+    arg("correctErrorTypes", "true")
+}
 
 dependencies {
     implementation(projects.libraryAndroid)
@@ -99,8 +114,8 @@ dependencies {
     implementation(libs.bundles.accompanist)
     implementation(libs.bundles.media3)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.2.1")
-    kapt("com.google.dagger:hilt-compiler:2.45")
-    implementation("com.google.dagger:hilt-android:2.45")
+    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("com.google.dagger:hilt-android:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 //    annotationProcessor("com.google.dagger:hilt-compiler:2.45")
     implementation("com.github.theapache64:rebugger:1.0.0-alpha03")
@@ -110,13 +125,38 @@ dependencies {
 //    https://github.com/google/dagger/issues/3383#issuecomment-1121189678
 //    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
 
-    testImplementation(libs.junit)
+    // Unit Tests
+    testImplementation(libs.bundles.testing.unit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.bundles.testing.roborazzi)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation("org.hamcrest:hamcrest:2.2")
 
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit.ktx)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.espresso.core)
+    // Android Instrumented Tests
+    androidTestImplementation(libs.bundles.testing.android)
     androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
+
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+}
+
+// Configure Roborazzi output directory
+roborazzi {
+    outputDir.set(file("src/test/snapshots/roborazzi"))
+}
+
+// Test task configurations for deterministic results
+tasks.withType<Test>().configureEach {
+    // Set timezone and locale for deterministic tests
+    systemProperty("user.timezone", "UTC")
+    systemProperty("user.language", "en")
+    systemProperty("user.country", "US")
+
+    // Roborazzi configuration
+    systemProperty("roborazzi.test.verify", System.getProperty("roborazzi.test.verify", "true"))
+    systemProperty("roborazzi.test.record", System.getProperty("roborazzi.test.record", "false"))
 }

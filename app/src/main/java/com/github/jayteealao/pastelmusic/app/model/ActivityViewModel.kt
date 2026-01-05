@@ -26,7 +26,7 @@ import androidx.media3.session.SessionToken
 import com.github.jayteealao.pastelmusic.app.database.SongsRepository
 import com.github.jayteealao.pastelmusic.app.mediaservice.EMPTY_PLAYBACK_STATE
 import com.github.jayteealao.pastelmusic.app.mediaservice.PlaybackState
-import com.github.jayteealao.pastelmusic.app.player.PastelMediaLibraryService
+import com.github.jayteealao.pastelmusic.app.mediaservice.MusicService
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,7 +60,7 @@ class ActivityViewModel @Inject constructor(@ApplicationContext context: Context
                         context,
                         ComponentName(
                             context,
-                            PastelMediaLibraryService::class.java
+                            MusicService::class.java
                         )
                     )
                 )
