@@ -5,7 +5,8 @@ plugins {
     kotlin("android")
 //    id(libs.plugins.hilt.get().pluginId)
     id("com.google.dagger.hilt.android")
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.paparazzi)
     alias(libs.plugins.roborazzi)
 }
@@ -36,6 +37,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    kotlin {
+        jvmToolchain(17)
+    }
+
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
@@ -83,9 +89,9 @@ android {
 }
 
 // Allow references to generated code
-//kapt {
-//    correctErrorTypes = true
-//}
+ksp {
+    arg("correctErrorTypes", "true")
+}
 
 dependencies {
     implementation(projects.libraryAndroid)
@@ -108,8 +114,8 @@ dependencies {
     implementation(libs.bundles.accompanist)
     implementation(libs.bundles.media3)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.2.1")
-    kapt("com.google.dagger:hilt-compiler:2.45")
-    implementation("com.google.dagger:hilt-android:2.45")
+    ksp("com.google.dagger:hilt-compiler:2.48")
+    implementation("com.google.dagger:hilt-android:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 //    annotationProcessor("com.google.dagger:hilt-compiler:2.45")
     implementation("com.github.theapache64:rebugger:1.0.0-alpha03")
@@ -126,12 +132,13 @@ dependencies {
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.compose.ui.test.junit4)
+    testImplementation("org.hamcrest:hamcrest:2.2")
 
     // Android Instrumented Tests
     androidTestImplementation(libs.bundles.testing.android)
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest("com.google.dagger:hilt-compiler:2.45")
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
 
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)

@@ -23,6 +23,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Use Java toolchain to avoid jlink issues
+    kotlin {
+        jvmToolchain(17)
+    }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
